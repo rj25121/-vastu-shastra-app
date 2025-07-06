@@ -12,6 +12,8 @@ app.use(express.static(__dirname));
 
 // Create a proxy endpoint for the Gemini API
 app.post('/gemini-proxy', async (req, res) => {
+  console.log('Received request on /gemini-proxy');
+
   // Get the prompt from the request body sent by the frontend
   const userPrompt = req.body.prompt;
   
@@ -19,8 +21,10 @@ app.post('/gemini-proxy', async (req, res) => {
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
+    console.error('GEMINI_API_KEY not found in environment variables.');
     return res.status(500).json({ error: 'API key not found on the server.' });
   }
+  console.log('API Key found. Calling Google AI...');
 
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
@@ -36,6 +40,13 @@ app.post('/gemini-proxy', async (req, res) => {
     });
 
     const data = await apiResponse.json();
+    
+    if (data.error) {
+        console.error('Error from Google AI API:', data.error.message);
+    } else {
+        console.log('Successfully received response from Google AI.');
+    }
+    
     res.json(data);
   } catch (error) {
     console.error('Error calling Gemini API:', error);
@@ -52,4 +63,3 @@ app.get('/', (req, res) => {
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port);
 });
-
