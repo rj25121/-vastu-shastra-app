@@ -909,7 +909,7 @@
                 compass.classList.remove('hidden');
                 
                 if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                    addSafeEventListener(compass, () => {
+                    compass.addEventListener('click', () => {
                         DeviceOrientationEvent.requestPermission()
                             .then(permissionState => {
                                 if (permissionState === 'granted') {
