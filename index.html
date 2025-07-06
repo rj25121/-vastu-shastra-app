@@ -715,46 +715,6 @@
                 }
                 return null;
             }
-
-            async function callGeminiForJson(prompt, resultElement, buttonElement) {
-                 resultElement.innerHTML = '<div class="loader"></div>';
-                if(buttonElement) buttonElement.disabled = true;
-
-                try {
-                    console.log('Sending JSON request to /gemini-proxy');
-                    const response = await fetch('/gemini-proxy', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ prompt: prompt, isJson: true })
-                    });
-                     if (!response.ok) {
-                        const errorBody = await response.text();
-                        console.error('Proxy server error response:', errorBody);
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const result = await response.json();
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        let text = result.candidates[0].content.parts[0].text;
-                        console.log('Received successful JSON response from AI');
-                        return JSON.parse(text);
-                    } else {
-                       let errorMessage = 'Sorry, I could not get a response. Please try again.';
-                        if (result.error) {
-                            errorMessage = `Error from AI: ${result.error.message}`;
-                            console.error('AI Error:', result.error);
-                        }
-                        resultElement.innerHTML = `<p class="text-red-500">${errorMessage}</p>`;
-                    }
-                } catch(error) {
-                    console.error("Error calling Gemini proxy for JSON:", error);
-                    resultElement.innerHTML = '<p class="text-red-500">An error occurred. Please check the server logs and try again.</p>';
-                } finally {
-                     if(buttonElement) buttonElement.disabled = false;
-                }
-                return null;
-            }
             
             // Daily Tip
             const dailyTipContent = document.getElementById('daily-tip-content');
