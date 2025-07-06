@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Science of Dwelling: An Interactive Guide to Vaastu Shastra with AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8; 
+            color: #4A403A; 
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-color 0.3s ease;
+            color: #786A61;
+            padding-bottom: 4px;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #BF5A36;
+            border-bottom-color: #BF5A36;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #EAE2D9;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.07);
+        }
+        .btn-primary {
+            background-color: #BF5A36;
+            color: #FFFFFF;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(191, 90, 54, 0.2);
+        }
+        .btn-primary:hover {
+            background-color: #A64D2D;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 10px rgba(191, 90, 54, 0.2);
+        }
+        .btn-primary:disabled {
+            background-color: #D7C6B7;
+            cursor: not-allowed;
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        .section-title {
+            color: #8C5A41;
+        }
+        .mandala-cell, .direction-zone {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .mandala-cell:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+        .direction-zone:hover {
+            opacity: 1 !important;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px; 
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+                max-height: 500px;
+            }
+        }
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #EAE2D9;
+            border-bottom-color: #BF5A36;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .source-link {
+            color: #BF5A36;
+            text-decoration: underline;
+            font-size: 0.875rem;
+            margin-top: 0.75rem;
+            display: inline-block;
+        }
+        .source-link:hover {
+            color: #A64D2D;
+        }
+        #compass {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 80px;
+            height: 80px;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            cursor: pointer;
+            transition: transform 0.5s ease-out;
+        }
+        #compass-arrow-svg {
+            width: 50px;
+            height: 50px;
+            transition: transform 0.5s ease-out;
+        }
+        #compass-permission {
+            font-size: 10px;
+            text-align: center;
+            padding: 5px;
+            color: #8C5A41;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white bg-opacity-90 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 py-3">
+            <div class="flex items-center justify-between">
+                <a href="#home" class="text-xl lg:text-2xl font-bold section-title">🕉️ Vaastu Shastra</a>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#principles" class="nav-link text-lg">Principles</a>
+                    <a href="#mandala" class="nav-link text-lg">The Mandala</a>
+                    <a href="#guide" class="nav-link text-lg">Practical Guide</a>
+                    <a href="#debate" class="nav-link text-lg">The Debate</a>
+                    <a href="#modern" class="nav-link text-lg">Modern Vastu</a>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#BF5A36]">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden mt-2">
+                <a href="#principles" class="block py-2 px-4 text-sm nav-link">Principles</a>
+                <a href="#mandala" class="block py-2 px-4 text-sm nav-link">The Mandala</a>
+                <a href="#guide" class="block py-2 px-4 text-sm nav-link">Practical Guide</a>
+                <a href="#debate" class="block py-2 px-4 text-sm nav-link">The Debate</a>
+                <a href="#modern" class="block py-2 px-4 text-sm nav-link">Modern Vastu</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="py-20 md:py-32">
+            <div class="container mx-auto px-4 sm:px-6 text-center">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold section-title leading-tight">The Science of Dwelling</h1>
+                <p class="mt-6 text-lg md:text-xl max-w-3xl mx-auto text-[#786A61]">An interactive exploration of Vaastu Shastra, now enhanced with AI-powered insights and verifiable references to help you harmonize your space.</p>
+                <div id="daily-tip-card" class="mt-10 max-w-2xl mx-auto card p-6 text-left">
+                    <h3 class="font-bold text-xl text-[#BF5A36] text-center mb-3">✨ Vastu Tip of the Day</h3>
+                    <p id="daily-tip-content" class="text-center text-lg text-[#786A61]">Loading your daily wisdom...</p>
+                </div>
+                <a href="#principles" class="mt-10 inline-block btn-primary font-bold py-4 px-8 rounded-full text-lg">Begin Exploration</a>
+            </div>
+        </section>
+
+        <section id="principles" class="py-16 lg:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold section-title">Core Principles</h2>
+                    <p class="mt-4 text-lg max-w-3xl mx-auto text-[#786A61]">Vaastu is built upon balancing the five great elements (*Pancha Mahabhuta*). Interact with them below to learn more.</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-6 text-center" id="elements-grid">
+                </div>
+                <div id="element-details" class="mt-8 card p-6 min-h-[140px] flex flex-col items-center justify-center text-center">
+                    <p class="text-lg text-[#786A61]">Hover or tap on an element to see its details here.</p>
+                </div>
+                 <div class="mt-12 card p-8">
+                    <h3 class="text-2xl font-bold section-title mb-4 text-center">The Flow of Cosmic Energy (Prana)</h3>
+                    <p class="text-lg text-[#786A61] leading-relaxed">Similar to *Chi* in Feng Shui, *Prana* is the universal life force energy. Vaastu aims to design buildings that allow Prana to enter freely, circulate without obstruction, and fill the space with positive vibrations through strategic placement of entrances, windows, and an open central area (*Brahmasthan*).</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="mandala" class="py-16 lg:py-24">
+            <div class="container mx-auto px-4 sm:px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold section-title">The Vastu Purusha Mandala</h2>
+                    <p class="mt-4 text-lg max-w-3xl mx-auto text-[#786A61]">The Mandala is the sacred blueprint for Vaastu design. Explore the grid to see how room placements are determined.</p>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-8 items-center">
+                    <div class="w-full lg:w-1/2">
+                        <div id="mandala-grid" class="grid grid-cols-9 grid-rows-9 aspect-square max-w-lg mx-auto shadow-lg rounded-lg overflow-hidden border-2 border-[#D7C6B7]">
+                        </div>
+                    </div>
+                    <div id="mandala-info" class="w-full lg:w-1/2 card p-6 flex flex-col justify-center min-h-[300px]">
+                        <h3 id="mandala-zone-name" class="text-2xl font-bold section-title">Brahmasthan (Center)</h3>
+                        <p id="mandala-zone-deity" class="text-lg font-medium text-[#786A61] mt-1">Deity: Brahma</p>
+                        <p id="mandala-zone-description" class="mt-4 text-lg text-[#786A61]">The energetic heart of the dwelling, representing Space (Akasha). This area should be kept open, light, and free of heavy objects to allow cosmic energy to radiate throughout the home.</p>
+                        <div id="mandala-source-container"></div>
+                        <p class="mt-6 text-sm text-[#BF5A36] font-semibold">Hover or tap on a square to learn about its significance.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="guide" class="py-16 lg:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold section-title">Practical Guide to a Vastu Home</h2>
+                    <p class="mt-4 text-lg max-w-3xl mx-auto text-[#786A61]">Click a zone to see its ideal use, then use our AI Planners to get specific suggestions for your rooms.</p>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                    <div class="w-full lg:w-3/5 relative aspect-square max-w-xl mx-auto">
+                        <div class="absolute inset-0 grid grid-cols-3 grid-rows-3 gap-1">
+                            <div class="direction-zone" data-direction="NW"></div>
+                            <div class="direction-zone" data-direction="N"></div>
+                            <div class="direction-zone" data-direction="NE"></div>
+                            <div class="direction-zone" data-direction="W"></div>
+                            <div class="bg-[#F5F5DC] flex items-center justify-center font-bold text-sm text-[#8C5A41] text-center p-2 rounded-md">Brahmasthan<br>(Center)</div>
+                            <div class="direction-zone" data-direction="E"></div>
+                            <div class="direction-zone" data-direction="SW"></div>
+                            <div class="direction-zone" data-direction="S"></div>
+                            <div class="direction-zone" data-direction="SE"></div>
+                        </div>
+                        <div id="house-layout-svg" class="relative z-10 pointer-events-none">
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-2/5 mt-6 lg:mt-0">
+                         <div id="direction-info" class="card p-6 lg:sticky lg:top-28">
+                            <h3 id="direction-title" class="text-2xl font-bold section-title mb-2">Select a Direction</h3>
+                            <p id="direction-attributes" class="text-base font-medium text-[#786A61] mb-4">Click a zone on the map to see its details.</p>
+                            <div id="direction-details">
+                                <p class="text-lg text-[#786A61]">Each zone in a home has a purpose, assigned by ancient sages based on the sun's movement and elemental qualities.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="ai-planner" class="mt-16 card p-8">
+                    <h3 class="text-2xl font-bold section-title text-center mb-4">✨ AI-Powered Vastu Room Planner</h3>
+                    <p class="text-center text-lg text-[#786A61] max-w-3xl mx-auto mb-6">Select a room and direction. Our AI will provide modern, practical Vastu suggestions.</p>
+                    <div class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+                        <select id="room-type-select" class="w-full p-3 rounded-lg border border-[#D7C6B7] bg-white focus:ring-2 focus:ring-[#BF5A36] focus:outline-none text-base">
+                            <option>Master Bedroom</option>
+                            <option>Kitchen</option>
+                            <option>Living Room</option>
+                            <option>Study Room</option>
+                            <option>Pooja Room (Prayer Room)</option>
+                            <option>Bathroom</option>
+                        </select>
+                        <button id="get-vastu-suggestions" class="btn-primary font-bold py-3 px-6 rounded-lg w-full sm:w-auto flex-shrink-0">Get Suggestions</button>
+                    </div>
+                    <div id="vastu-suggestions-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center">
+                        <p class="text-lg text-[#786A61]">Your AI-generated Vastu suggestions will appear here.</p>
+                    </div>
+                </div>
+
+                <div id="ai-layout-drawer" class="mt-16 card p-8">
+                    <h3 class="text-2xl font-bold section-title text-center mb-4">✨ AI Vastu Layout Drawer & Analyzer</h3>
+                    <p class="text-center text-lg text-[#786A61] max-w-3xl mx-auto mb-6">Describe your room's layout (e.g., "A rectangular bedroom in the south with the bed against the west wall and a door on the north wall.") and our AI will draw it and analyze it for you.</p>
+                    <textarea id="layout-description-drawer" rows="4" class="w-full p-3 rounded-lg border border-[#D7C6B7] bg-white focus:ring-2 focus:ring-[#BF5A36] focus:outline-none text-base" placeholder="Describe your room here..."></textarea>
+                    <div class="flex flex-col sm:flex-row gap-4 mt-4">
+                        <button id="draw-layout" class="btn-primary font-bold py-3 px-6 rounded-lg w-full">Draw My Layout</button>
+                        <button id="analyze-layout" class="btn-primary font-bold py-3 px-6 rounded-lg w-full">Analyze My Layout</button>
+                    </div>
+                    <div id="layout-canvas-container" class="mt-6 p-4 bg-[#FAF8F5] rounded-lg min-h-[300px] md:min-h-[400px] flex items-center justify-center text-center">
+                        <canvas id="layout-canvas" class="bg-white rounded-md shadow-inner"></canvas>
+                    </div>
+                    <div id="layout-analysis-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center">
+                        <p class="text-lg text-[#786A61]">Your personalized layout analysis will appear here.</p>
+                    </div>
+                </div>
+
+                <div id="ai-goal-planner" class="mt-16 card p-8">
+                    <h3 class="text-2xl font-bold section-title text-center mb-4">✨ Vastu for Your Goals</h3>
+                    <p class="text-center text-lg text-[#786A61] max-w-3xl mx-auto mb-6">Select a life goal, and our AI will provide Vastu remedies to help you achieve it.</p>
+                    <div class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+                        <select id="goal-select" class="w-full p-3 rounded-lg border border-[#D7C6B7] bg-white focus:ring-2 focus:ring-[#BF5A36] focus:outline-none text-base">
+                            <option>Improve Career</option>
+                            <option>Increase Wealth</option>
+                            <option>Better Health</option>
+                            <option>Harmonious Family Life</option>
+                            <option>Enhance Studies</option>
+                        </select>
+                        <button id="get-goal-tips" class="btn-primary font-bold py-3 px-6 rounded-lg w-full sm:w-auto flex-shrink-0">Get Tips</button>
+                    </div>
+                    <div id="goal-tips-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center">
+                        <p class="text-lg text-[#786A61]">Your personalized Vastu tips will appear here.</p>
+                    </div>
+                </div>
+
+                <div id="ai-color-palette" class="mt-16 card p-8">
+                    <h3 class="text-2xl font-bold section-title text-center mb-4">✨ AI Color Palette Generator</h3>
+                    <p class="text-center text-lg text-[#786A61] max-w-3xl mx-auto mb-6">Choose a room and a desired mood to generate a Vastu-compliant color palette.</p>
+                    <div class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+                        <select id="color-room-select" class="w-full p-3 rounded-lg border border-[#D7C6B7] bg-white focus:ring-2 focus:ring-[#BF5A36] focus:outline-none text-base">
+                            <option>Living Room</option>
+                            <option>Bedroom</option>
+                            <option>Kitchen</option>
+                            <option>Study</option>
+                            <option>Bathroom</option>
+                        </select>
+                        <select id="mood-select" class="w-full p-3 rounded-lg border border-[#D7C6B7] bg-white focus:ring-2 focus:ring-[#BF5A36] focus:outline-none text-base">
+                            <option>Calm & Peaceful</option>
+                            <option>Energetic & Vibrant</option>
+                            <option>Elegant & Sophisticated</option>
+                            <option>Warm & Cozy</option>
+                        </select>
+                        <button id="get-color-palette" class="btn-primary font-bold py-3 px-6 rounded-lg w-full sm:w-auto flex-shrink-0">Get Palette</button>
+                    </div>
+                    <div id="color-palette-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center">
+                        <p class="text-lg text-[#786A61]">Your AI-generated color palette will appear here.</p>
+                    </div>
+                    <div class="text-center mt-4">
+                        <a href="https://www.architecturaldigest.in/content/vastu-shastra-colour-therapy-home-increase-well-being/" target="_blank" rel="noopener noreferrer" class="source-link">Learn more about Vastu colors</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="debate" class="py-16 lg:py-24">
+            <div class="container mx-auto px-4 sm:px-6">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold section-title">The Great Debate: Science or Pseudoscience?</h2>
+                    <p class="mt-4 text-lg max-w-3xl mx-auto text-[#786A61]">Vaastu's claim to be a "science" is highly debated. This section presents both perspectives.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="card p-6">
+                        <h3 class="text-2xl font-bold text-green-700 mb-4">Arguments for a Scientific Basis</h3>
+                        <ul id="pro-arguments" class="space-y-4 text-lg text-[#786A61]"></ul>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-2xl font-bold text-red-700 mb-4">The Skeptical View</h3>
+                        <ul id="con-arguments" class="space-y-4 text-lg text-[#786A61]"></ul>
+                    </div>
+                </div>
+                 <div class="mt-16 card p-8">
+                    <h3 class="text-2xl font-bold section-title text-center mb-4">✨ Explore a Topic Deeper with AI</h3>
+                     <p class="text-center text-lg text-[#786A61] max-w-3xl mx-auto mb-6">Curious about a concept? Enter it below and ask our AI for a balanced explanation.</p>
+                    <div class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+                        <input type="text" id="debate-topic-input" placeholder="e.g., Geomagnetism in Vastu" class="w-full p-3 rounded-lg border border-[#D7C6B7] bg-white focus:ring-2 focus:ring-[#BF5A36] focus:outline-none text-base">
+                        <button id="ask-gemini-debate" class="btn-primary font-bold py-3 px-6 rounded-lg w-full sm:w-auto flex-shrink-0">Ask AI</button>
+                    </div>
+                    <div id="debate-ai-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center">
+                        <p class="text-lg text-[#786A61]">Your AI-generated explanation will appear here.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="modern" class="py-16 lg:py-24 bg-white">
+             <div class="container mx-auto px-4 sm:px-6">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold section-title">Vastu in the Modern World</h2>
+                    <p class="mt-4 text-lg max-w-3xl mx-auto text-[#786A61]">How does this ancient system fit into the 21st century? This section compares Vaastu with Feng Shui and looks at its modern adaptations.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="card p-6">
+                        <h3 class="text-2xl font-bold section-title text-center mb-4">Vastu Shastra vs. Feng Shui</h3>
+                        <div class="chart-container">
+                            <canvas id="vastuFengShuiChart"></canvas>
+                        </div>
+                         <div class="mt-6 p-4 bg-[#FAF8F5] rounded-lg">
+                            <h4 class="font-bold text-lg text-[#BF5A36] mb-2">How to Read This Chart:</h4>
+                            <p class="text-base text-[#786A61] text-left">This chart is a qualitative comparison, not a scientific score. The further a point is from the center, the more emphasis that system places on the attribute.</p>
+                            <ul class="list-disc list-inside mt-2 text-left text-base text-[#786A61] space-y-1">
+                                <li><strong>Origin:</strong> Refers to the historical and philosophical roots (Vastu's Vedic origins are older).</li>
+                                <li><strong>Core Concept:</strong> Both systems have strong central philosophies.</li>
+                                <li><strong>Key Tool:</strong> Vastu's Mandala is more architectural; Feng Shui's Bagua is more for placement.</li>
+                                <li><strong>Elements:</strong> Both use five elements, but they differ (Vastu: Space/Air; Feng Shui: Wood/Metal).</li>
+                                <li><strong>Energy:</strong> Both focus on life force energy (Prana vs. Chi).</li>
+                                <li><strong>Application:</strong> Vastu is more structural; Feng Shui is more remedial and focuses on placement.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-2xl font-bold section-title text-center mb-4">Modern Applications</h3>
+                        <div class="space-y-6 text-lg text-[#786A61]">
+                            <div>
+                                <h4 class="font-bold text-xl text-[#BF5A36]">Residential Architecture</h4>
+                                <p>Architects integrate core ideas—like central courtyards, natural light, and natural materials—into contemporary homes, focusing on well-being.</p>
+                            </div>
+                             <div>
+                                <h4 class="font-bold text-xl text-[#BF5A36]">Commercial Projects</h4>
+                                <p>Corporations use Vastu principles in campus design to foster a positive and productive work environment.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xl text-[#BF5A36]">Commercialization & Challenges</h4>
+                                <p>A major challenge is adapting principles for standalone homes to urban high-rises, often leading to a focus on simple "remedies".</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#EAE2D9] py-10 mt-16">
+        <div class="container mx-auto px-4 sm:px-6 text-center text-[#786A61]">
+            <p class="text-base">Interactive experience designed from "The Science of Dwelling: A Comprehensive Analysis of Vaastu Shastra".</p>
+            <p class="text-sm mt-2">For educational purposes only.</p>
+        </div>
+    </footer>
+
+    <div id="compass" class="hidden">
+        <svg id="compass-arrow-svg" viewBox="0 0 100 100">
+            <path d="M50 0 L65 50 L50 40 L35 50 Z" fill="#BF5A36"/>
+            <path d="M50 100 L65 50 L50 60 L35 50 Z" fill="#4A403A"/>
+        </svg>
+        <div id="compass-permission" class="absolute inset-0 flex items-center justify-center bg-white/70 rounded-full">
+            <p>Tap to activate compass</p>
+        </div>
+    </div>
+
+    <script>
+        const elementsData = [
+            { name: "Earth (Prithvi)", icon: "🌍", description: "Represents stability, support, and grounding. Dominant in the Southwest.", reference: "https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta" },
+            { name: "Water (Jal)", icon: "💧", description: "Symbolizes flow, purity, and life. Ideally placed in the Northeast.", reference: "https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta" },
+            { name: "Fire (Agni)", icon: "🔥", description: "Denotes energy, transformation, and power. Governed by the Southeast.", reference: "https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta" },
+            { name: "Air (Vayu)", icon: "💨", description: "Signifies movement, communication, and freshness. Dominant in the Northwest.", reference: "https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta" },
+            { name: "Space (Akasha)", icon: "✨", description: "Represents expansion, openness, and the cosmos. Associated with the central area (Brahmasthan).", reference: "https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta" }
+        ];
+
+        const mandalaData = [
+            { zone: 'Brahmasthan', deity: 'Brahma', description: 'The energetic core. Represents Space. Keep open and light.', reference: "https://www.researchgate.net/figure/The-Vaastu-Purusha-Mandala-is-the-clearest-model-of-the-Universe-and-provides-the-basis_fig1_317901400" },
+            { zone: 'Ishanya (NE)', deity: 'Shiva / Eeshaan', description: 'Head of the Purusha. Most sacred zone for prayer and meditation. Represents Water.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" },
+            { zone: 'Agneya (SE)', deity: 'Agni', description: 'Right hand. Zone of Fire. Ideal for kitchens and electricals.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" },
+            { zone: 'Nairutya (SW)', deity: 'Niruti', description: 'Feet of the Purusha. Zone of Earth. Represents stability. Ideal for master bedroom.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" },
+            { zone: 'Vayavya (NW)', deity: 'Vayu', description: 'Left hand. Zone of Air. Represents movement. Good for guest rooms.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" },
+            { zone: 'Uttara (N)', deity: 'Kuber', description: 'Governs wealth and prosperity. Good for entrances and offices.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" },
+            { zone: 'Purva (E)', deity: 'Indra', description: 'Governs health and new beginnings. Ideal for entrances and living areas.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" },
+            { zone: 'Dakshina (S)', deity: 'Yama', description: 'Governs strength and dharma. Good for bedrooms and heavy structures.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" },
+            { zone: 'Paschima (W)', deity: 'Varuna', description: 'Governs gains and fulfillment. Suitable for dining areas and pantries.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" }
+        ];
+        
+        const directionsData = {
+            NE: { title: "Northeast (Ishanya)", attributes: "Deity: Shiva | Element: Water", details: "<h4>Auspicious For:</h4><p>Pooja Room, Meditation, Water Bodies.</p><h4>Inauspicious For:</h4><p>Toilets, Kitchen, Heavy Storage.</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" },
+            E: { title: "East (Purva)", attributes: "Deity: Indra | Element: Air/Fire", details: "<h4>Auspicious For:</h4><p>Main Entrance, Living Room, Study.</p><h4>Inauspicious For:</h4><p>Heavy Structures, Toilets (waste).</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" },
+            SE: { title: "Southeast (Agneya)", attributes: "Deity: Agni | Element: Fire", details: "<h4>Auspicious For:</h4><p>Kitchen, Electrical Panels, Generators.</p><h4>Inauspicious For:</h4><p>Bedrooms, Water Bodies.</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" },
+            S: { title: "South (Dakshina)", attributes: "Deity: Yama | Element: Fire", details: "<h4>Auspicious For:</h4><p>Master Bedroom, Staircase, Heavy Storage.</p><h4>Inauspicious For:</h4><p>Main Entrance, Kitchen.</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" },
+            SW: { title: "Southwest (Nairutya)", attributes: "Deity: Niruti | Element: Earth", details: "<h4>Auspicious For:</h4><p>Master Bedroom, Heavy Furniture.</p><h4>Inauspicious For:</h4><p>Entrance, Kitchen, Toilets.</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" },
+            W: { title: "West (Paschima)", attributes: "Deity: Varuna | Element: Water/Space", details: "<h4>Auspicious For:</h4><p>Dining Room, Toilets, Study Room.</p><h4>Inauspicious For:</h4><p>Main Entrance (in some traditions).</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" },
+            NW: { title: "Northwest (Vayavya)", attributes: "Deity: Vayu | Element: Air", details: "<h4>Auspicious For:</h4><p>Guest Room, Garage, Bathrooms.</p><h4>Inauspicious For:</h4><p>Kitchen (primary), Master Bedroom.</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" },
+            N: { title: "North (Uttara)", attributes: "Deity: Kuber | Element: Water/Earth", details: "<h4>Auspicious For:</h4><p>Main Entrance, Office, Keeping Valuables.</p><h4>Inauspicious For:</h4><p>Toilets, Heavy Storage.</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" }
+        };
+
+        const debateData = {
+            pro: [
+                "☀️ **Solar & Climatic Design:** Aligns with passive solar architecture for optimal sun exposure and heat management.",
+                "🌍 **Geomagnetism:** Rules like sleeping direction are linked to Earth's magnetic field for better well-being.",
+                "🧠 **Environmental Psychology:** Emphasis on clean, well-lit spaces aligns with modern understanding of environmental impact on mental health."
+            ],
+            con: [
+                "❓ **Lack of Empirical Evidence:** Claims are not backed by rigorous, controlled scientific studies.",
+                "⚠️ **Inconsistency & Oversimplification:** Universal rules don't account for diverse climates and contexts.",
+                "💊 **Placebo Effect:** Benefits may stem from the psychological effect of improving one's space."
+            ]
+        };
+
+        let currentDirection = 'NE'; 
+        let vastuChart = null;
+
+        function addSafeEventListener(element, handler) {
+            element.addEventListener('click', (e) => {
+                e.preventDefault();
+                handler(e);
+            });
+            element.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                handler(e);
+            }, { passive: false });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const elementsGrid = document.getElementById('elements-grid');
+            const elementDetails = document.getElementById('element-details');
+            elementsData.forEach(el => {
+                const div = document.createElement('div');
+                div.className = 'card p-4 cursor-pointer flex flex-col items-center justify-center';
+                div.innerHTML = `<div class="text-3xl sm:text-4xl">${el.icon}</div><h3 class="mt-2 text-sm sm:text-base font-semibold">${el.name}</h3>`;
+                const showDetails = () => {
+                    elementDetails.innerHTML = `<p class="text-lg">${el.description}</p> <a href="${el.reference}" target="_blank" rel="noopener noreferrer" class="source-link">Source</a>`;
+                };
+                div.addEventListener('mouseenter', showDetails);
+                addSafeEventListener(div, showDetails);
+                elementsGrid.appendChild(div);
+            });
+
+            const mandalaGrid = document.getElementById('mandala-grid');
+            const mandalaInfo = document.getElementById('mandala-info');
+            const mandalaSourceContainer = document.getElementById('mandala-source-container');
+            const zoneMap = {
+                '0,0': mandalaData[4], '0,1': mandalaData[4], '1,0': mandalaData[4], '1,1': mandalaData[4], 
+                '0,7': mandalaData[1], '0,8': mandalaData[1], '1,7': mandalaData[1], '1,8': mandalaData[1],
+                '7,0': mandalaData[3], '8,0': mandalaData[3], '7,1': mandalaData[3], '8,1': mandalaData[3],
+                '7,7': mandalaData[2], '7,8': mandalaData[2], '8,7': mandalaData[2], '8,8': mandalaData[2],
+                '0,2': mandalaData[5], '0,3': mandalaData[5], '0,4': mandalaData[5], '0,5': mandalaData[5], '0,6': mandalaData[5],
+                '2,8': mandalaData[6], '3,8': mandalaData[6], '4,8': mandalaData[6], '5,8': mandalaData[6], '6,8': mandalaData[6],
+                '8,2': mandalaData[7], '8,3': mandalaData[7], '8,4': mandalaData[7], '8,5': mandalaData[7], '8,6': mandalaData[7],
+                '2,0': mandalaData[8], '3,0': mandalaData[8], '4,0': mandalaData[8], '5,0': mandalaData[8], '6,0': mandalaData[8]
+            };
+            for (let row = 0; row < 9; row++) {
+                for (let col = 0; col < 9; col++) {
+                    const cell = document.createElement('div');
+                    let isCenter = row >= 3 && row <= 5 && col >= 3 && col <= 5;
+                    let zoneData = isCenter ? mandalaData[0] : (zoneMap[`${row},${col}`] || null);
+
+                    cell.className = 'mandala-cell border border-gray-300/50 flex items-center justify-center';
+                    cell.style.backgroundColor = isCenter ? 'rgba(250, 248, 245, 0.9)' : `rgba(215, 198, 183, ${0.2 + (Math.abs(4-row)+Math.abs(4-col))*0.05})`;
+
+                    if(zoneData){
+                        const showMandalaDetails = () => {
+                            mandalaInfo.querySelector('#mandala-zone-name').textContent = zoneData.zone;
+                            mandalaInfo.querySelector('#mandala-zone-deity').textContent = `Deity: ${zoneData.deity}`;
+                            mandalaInfo.querySelector('#mandala-zone-description').textContent = zoneData.description;
+                            mandalaSourceContainer.innerHTML = `<a href="${zoneData.reference}" target="_blank" rel="noopener noreferrer" class="source-link">Source</a>`;
+                        };
+                        cell.addEventListener('mouseenter', showMandalaDetails);
+                        addSafeEventListener(cell, showMandalaDetails);
+                    }
+                    mandalaGrid.appendChild(cell);
+                }
+            }
+            
+            const houseLayout = document.getElementById('house-layout-svg');
+            houseLayout.innerHTML = `<svg viewBox="0 0 100 100" class="w-full h-full">
+                <path d="M5 5 H 95 V 95 H 5 Z" fill="none" stroke="#D7C6B7" stroke-width="1"/>
+                <path d="M35 5 V 95 M65 5 V 95 M5 35 H 95 M5 65 H 95" fill="none" stroke="#D7C6B7" stroke-width="0.5"/>
+                <path d="M35 35 H 65 V 65 H 35 Z" fill="#FAF8F5" stroke="#BF5A36" stroke-width="1"/>
+                <text x="50" y="8" class="text-[5px] fill-current text-[#786A61]" text-anchor="middle">North</text>
+                <text x="50" y="94" class="text-[5px] fill-current text-[#786A61]" text-anchor="middle">South</text>
+                <text x="8" y="52" class="text-[5px] fill-current text-[#786A61]" text-anchor="start" transform="rotate(-90 8 52)">West</text>
+                <text x="92" y="52" class="text-[5px] fill-current text-[#786A61]" text-anchor-end="end" transform="rotate(90 92 52)">East</text>
+            </svg>`;
+            
+            const directionZones = document.querySelectorAll('.direction-zone');
+            const directionInfoCard = document.getElementById('direction-info');
+            directionZones.forEach(zone => {
+                addSafeEventListener(zone, () => {
+                    const dir = zone.dataset.direction;
+                    currentDirection = dir;
+                    const data = directionsData[dir];
+                    document.getElementById('direction-title').textContent = data.title;
+                    document.getElementById('direction-attributes').textContent = data.attributes;
+                    document.getElementById('direction-details').innerHTML = data.details.replace(/<h4>/g, '<h4 class="font-bold text-lg text-[#BF5A36] mt-3">').replace(/<p>/g, '<p class="text-lg text-[#786A61]">') + `<a href="${data.reference}" target="_blank" rel="noopener noreferrer" class="source-link">Source</a>`;
+
+                    directionZones.forEach(z => {
+                        z.style.backgroundColor = 'transparent';
+                        z.style.opacity = '0.6';
+                    });
+                    zone.style.backgroundColor = 'rgba(191, 90, 54, 0.3)';
+                    zone.style.opacity = '1';
+
+                    if (window.innerWidth < 1024) {
+                        directionInfoCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+            });
+
+            const proList = document.getElementById('pro-arguments');
+            debateData.pro.forEach(arg => {
+                const li = document.createElement('li');
+                li.innerHTML = arg;
+                proList.appendChild(li);
+            });
+            const conList = document.getElementById('con-arguments');
+            debateData.con.forEach(arg => {
+                const li = document.createElement('li');
+                li.innerHTML = arg;
+                conList.appendChild(li);
+            });
+            
+            function renderChart() {
+                if (vastuChart) {
+                    vastuChart.destroy();
+                }
+                const ctx = document.getElementById('vastuFengShuiChart').getContext('2d');
+                vastuChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Origin', 'Core Concept', 'Key Tool', 'Elements', 'Energy', 'Application'],
+                        datasets: [{
+                            label: 'Vastu Shastra',
+                            data: [10, 8, 9, 7, 9, 8],
+                            backgroundColor: 'rgba(191, 90, 54, 0.2)',
+                            borderColor: 'rgba(191, 90, 54, 1)',
+                            pointBackgroundColor: 'rgba(191, 90, 54, 1)',
+                        }, {
+                            label: 'Feng Shui',
+                            data: [8, 7, 8, 6, 9, 7],
+                            backgroundColor: 'rgba(120, 106, 97, 0.2)',
+                            borderColor: 'rgba(120, 106, 97, 1)',
+                            pointBackgroundColor: 'rgba(120, 106, 97, 1)',
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        responsive: true,
+                        scales: {
+                            r: {
+                                angleLines: { color: '#D7C6B7' },
+                                grid: { color: '#EAE2D9' },
+                                pointLabels: { font: { size: 12 }, color: '#4A403A' },
+                                ticks: { display: false, beginAtZero: true, max: 10 }
+                            }
+                        },
+                        plugins: {
+                            legend: { labels: { color: '#4A403A', font: { size: 14 } } }
+                        },
+                        tooltips: {
+                             callbacks: {
+                               label: function(tooltipItem, data) {
+                                 return data.datasets[tooltipItem.datasetIndex].label;
+                               }
+                             }
+                        }
+                    }
+                });
+            }
+            renderChart();
+            window.addEventListener('resize', renderChart);
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            addSafeEventListener(mobileMenuButton, () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                addSafeEventListener(anchor, (e) => {
+                    const targetId = anchor.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    if (!mobileMenu.classList.contains('hidden')) {
+                         mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            async function callGemini(prompt, resultElement, buttonElement, isJson = false) {
+                const apiKey = "";
+
+                resultElement.innerHTML = '<div class="loader"></div>';
+                if(buttonElement) buttonElement.disabled = true;
+
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+
+                if (isJson) {
+                    payload.generationConfig = {
+                        responseMimeType: "application/json",
+                    };
+                }
+                
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        let text = result.candidates[0].content.parts[0].text;
+                        if (isJson) {
+                            try {
+                                return JSON.parse(text);
+                            } catch (parseError) {
+                                console.error("JSON Parsing Error:", parseError, "Raw text:", text);
+                                resultElement.innerHTML = '<p class="text-red-500">AI returned an invalid format. Please try again.</p>';
+                                return null;
+                            }
+                        } else {
+                            resultElement.innerHTML = `<p class="text-left whitespace-pre-wrap p-2 text-lg">${text}</p>`;
+                        }
+                        return text;
+                    } else {
+                        resultElement.innerHTML = '<p class="text-red-500">Sorry, I could not get a response. Please try again.</p>';
+                    }
+                } catch (error) {
+                    console.error("Error calling Gemini API:", error);
+                    resultElement.innerHTML = '<p class="text-red-500">An error occurred. Please check the console and try again.</p>';
+                } finally {
+                    if(buttonElement) buttonElement.disabled = false;
+                }
+                return null;
+            }
+            
+            // Daily Tip
+            const dailyTipContent = document.getElementById('daily-tip-content');
+            callGemini("Give me a short, practical, and inspiring Vastu Shastra tip for today.", dailyTipContent, null);
+
+            // Room Planner
+            const getVastuSuggestionsBtn = document.getElementById('get-vastu-suggestions');
+            const vastuSuggestionsResult = document.getElementById('vastu-suggestions-result');
+            const roomTypeSelect = document.getElementById('room-type-select');
+            addSafeEventListener(getVastuSuggestionsBtn, () => {
+                const roomType = roomTypeSelect.value;
+                const directionInfo = directionsData[currentDirection];
+                const prompt = `As a Vastu Shastra expert, provide practical, modern suggestions for a ${roomType} located in the ${directionInfo.title} direction of a home. Consider furniture placement, ideal colors, materials, and any specific remedies or enhancements suitable for this combination. Present the information clearly in bullet points.`;
+                callGemini(prompt, vastuSuggestionsResult, getVastuSuggestionsBtn);
+            });
+
+            // Layout Drawer & Analyzer
+            const drawLayoutBtn = document.getElementById('draw-layout');
+            const analyzeLayoutBtn = document.getElementById('analyze-layout');
+            const layoutDescriptionDrawer = document.getElementById('layout-description-drawer');
+            const layoutCanvasContainer = document.getElementById('layout-canvas-container');
+            const layoutCanvas = document.getElementById('layout-canvas');
+            const layoutAnalysisResult = document.getElementById('layout-analysis-result');
+            const ctx = layoutCanvas.getContext('2d');
+
+            addSafeEventListener(drawLayoutBtn, async () => {
+                const description = layoutDescriptionDrawer.value;
+                if (!description.trim()) {
+                    layoutCanvasContainer.innerHTML = '<p class="text-red-500">Please describe your room layout.</p>';
+                    return;
+                }
+                
+                const prompt = `You are an expert in the HTML5 Canvas API. Based on the user's description, write JavaScript code to draw a 2D floor plan. The canvas context is available as a variable named 'ctx'. The canvas dimensions are 400x300. The origin (0,0) is the top-left corner. Your response must be ONLY the raw JavaScript code for drawing, without any surrounding text, explanations, or markdown formatting like \`\`\`javascript. For example, if the user says 'a square room with a door on the left', you should output something like: 'ctx.strokeRect(50, 50, 200, 200); ctx.fillRect(45, 125, 10, 50);'. Here is the user's description: "${description}"`;
+                
+                layoutCanvasContainer.innerHTML = '<div class="loader"></div>';
+                const drawingCode = await callGemini(prompt, layoutCanvasContainer, drawLayoutBtn);
+
+                if (drawingCode) {
+                    layoutCanvasContainer.innerHTML = '';
+                    layoutCanvasContainer.appendChild(layoutCanvas);
+                    drawLayoutFromCode(drawingCode);
+                }
+            });
+
+            addSafeEventListener(analyzeLayoutBtn, () => {
+                const description = layoutDescriptionDrawer.value;
+                if (!description.trim()) {
+                    layoutAnalysisResult.innerHTML = '<p class="text-red-500">Please describe your room layout first.</p>';
+                    return;
+                }
+                const prompt = `You are a Vastu Shastra expert. A user has described their room layout. Analyze it based on Vastu principles. Identify positive aspects and areas for improvement. Provide specific, actionable remedies in a clear, easy-to-understand format. Here is the user's description: "${description}"`;
+                callGemini(prompt, layoutAnalysisResult, analyzeLayoutBtn);
+            });
+
+            function drawLayoutFromCode(code) {
+                const canvasWidth = 400;
+                const canvasHeight = 300;
+                layoutCanvas.width = canvasWidth;
+                layoutCanvas.height = canvasHeight;
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                try {
+                    const drawFunction = new Function('ctx', code);
+                    drawFunction(ctx);
+                } catch (e) {
+                    console.error("Error executing drawing code:", e);
+                    ctx.fillStyle = '#4A403A';
+                    ctx.font = '14px Inter';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('Could not draw layout. Please try a different description.', canvasWidth / 2, canvasHeight / 2);
+                }
+            }
+
+            // Vastu for Goals
+            const getGoalTipsBtn = document.getElementById('get-goal-tips');
+            const goalSelect = document.getElementById('goal-select');
+            const goalTipsResult = document.getElementById('goal-tips-result');
+            addSafeEventListener(getGoalTipsBtn, () => {
+                const goal = goalSelect.value;
+                const prompt = `As a Vastu Shastra expert, provide 5 actionable Vastu tips and remedies specifically for achieving the goal of '${goal}'. Explain the reasoning behind each tip clearly and concisely.`;
+                callGemini(prompt, goalTipsResult, getGoalTipsBtn);
+            });
+
+            // Color Palette Generator
+            const getColorPaletteBtn = document.getElementById('get-color-palette');
+            const colorRoomSelect = document.getElementById('color-room-select');
+            const moodSelect = document.getElementById('mood-select');
+            const colorPaletteResult = document.getElementById('color-palette-result');
+
+            addSafeEventListener(getColorPaletteBtn, async () => {
+                const roomType = colorRoomSelect.value;
+                const mood = moodSelect.value;
+                const prompt = `You are a Vastu and interior design expert. Generate a Vastu-compliant color palette for a ${roomType} to create a '${mood}' atmosphere. The direction is ${currentDirection}. Provide a primary, secondary, and accent color. Your response must be ONLY a raw JSON object with a single key "palette" which is an array of objects. Each object must have "type", "name", "hex", and "explanation" keys.`;
+                
+                const paletteData = await callGemini(prompt, colorPaletteResult, getColorPaletteBtn, true);
+
+                if (paletteData && paletteData.palette) {
+                    colorPaletteResult.innerHTML = '';
+                    const paletteContainer = document.createElement('div');
+                    paletteContainer.className = 'grid grid-cols-1 md:grid-cols-3 gap-4 text-center';
+                    paletteData.palette.forEach(color => {
+                        const colorDiv = document.createElement('div');
+                        colorDiv.innerHTML = `
+                            <div class="w-full h-24 rounded-md" style="background-color: ${color.hex};"></div>
+                            <h4 class="font-bold mt-2">${color.type}: ${color.name}</h4>
+                            <p class="text-sm">${color.hex}</p>
+                            <p class="text-xs mt-1 text-left">${color.explanation}</p>
+                        `;
+                        paletteContainer.appendChild(colorDiv);
+                    });
+                    colorPaletteResult.appendChild(paletteContainer);
+                }
+            });
+
+
+            // Debate Helper
+            const askDebateBtn = document.getElementById('ask-gemini-debate');
+            const debateTopicInput = document.getElementById('debate-topic-input');
+            const debateAiResult = document.getElementById('debate-ai-result');
+            addSafeEventListener(askDebateBtn, () => {
+                const topic = debateTopicInput.value;
+                if (!topic.trim()) {
+                    debateAiResult.innerHTML = '<p class="text-red-500">Please enter a topic to explore.</p>';
+                    return;
+                }
+                const prompt = `Please provide a balanced and nuanced explanation of "${topic}" within the context of the Vastu Shastra debate. Cover both the traditional Vastu perspective and the modern scientific or skeptical viewpoint. Explain the core arguments from each side clearly.`;
+                callGemini(prompt, debateAiResult, askDebateBtn);
+            });
+
+            // Live Compass Feature
+            const compass = document.getElementById('compass');
+            const compassArrow = document.getElementById('compass-arrow-svg');
+            const compassPermission = document.getElementById('compass-permission');
+            let lastHeading = 0;
+            const smoothingFactor = 0.1;
+
+            function handleOrientation(event) {
+                let heading = event.webkitCompassHeading || (360 - event.alpha);
+                if (typeof heading !== 'undefined' && heading !== null) {
+                    // Apply smoothing
+                    if (lastHeading === 0) {
+                        lastHeading = heading;
+                    } else {
+                        // Handle wrap-around from 359 to 0 degrees and vice-versa
+                        let diff = heading - lastHeading;
+                        if (diff > 180) {
+                            lastHeading += 360;
+                        } else if (diff < -180) {
+                            lastHeading -= 360;
+                        }
+                        heading = lastHeading * (1 - smoothingFactor) + heading * smoothingFactor;
+                        lastHeading = heading;
+                    }
+                    compass.style.transform = `rotate(${-heading}deg)`;
+                }
+            }
+
+            if (window.DeviceOrientationEvent) {
+                compass.classList.remove('hidden');
+                
+                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    addSafeEventListener(compass, () => {
+                        DeviceOrientationEvent.requestPermission()
+                            .then(permissionState => {
+                                if (permissionState === 'granted') {
+                                    window.addEventListener('deviceorientation', handleOrientation);
+                                    compassPermission.style.display = 'none';
+                                } else {
+                                    compassPermission.textContent = 'Permission denied';
+                                }
+                            })
+                            .catch((error) => {
+                                console.error('Compass permission error:', error);
+                                compassPermission.innerHTML = 'Compass not supported on this browser/device.';
+                            });
+                    });
+                } else {
+                    // For non-iOS 13+ browsers
+                    window.addEventListener('deviceorientation', handleOrientation);
+                    compassPermission.style.display = 'none';
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
