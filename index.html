@@ -153,6 +153,10 @@
             padding: 5px;
             color: #8C5A41;
         }
+        .ai-response-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -189,7 +193,7 @@
                 <p class="mt-6 text-lg md:text-xl max-w-3xl mx-auto text-[#786A61]">An interactive exploration of Vaastu Shastra, now enhanced with AI-powered insights and verifiable references to help you harmonize your space.</p>
                 <div id="daily-tip-card" class="mt-10 max-w-2xl mx-auto card p-6 text-left">
                     <h3 class="font-bold text-xl text-[#BF5A36] text-center mb-3">✨ Vastu Tip of the Day</h3>
-                    <p id="daily-tip-content" class="text-center text-lg text-[#786A61]">Loading your daily wisdom...</p>
+                    <div id="daily-tip-content" class="text-center text-lg text-[#786A61] ai-response-content">Loading your daily wisdom...</div>
                 </div>
                 <a href="#principles" class="mt-10 inline-block btn-primary font-bold py-4 px-8 rounded-full text-lg">Begin Exploration</a>
             </div>
@@ -282,7 +286,7 @@
                         </select>
                         <button id="get-vastu-suggestions" class="btn-primary font-bold py-3 px-6 rounded-lg w-full sm:w-auto flex-shrink-0">Get Suggestions</button>
                     </div>
-                    <div id="vastu-suggestions-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center">
+                    <div id="vastu-suggestions-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center ai-response-content">
                         <p class="text-lg text-[#786A61]">Your AI-generated Vastu suggestions will appear here.</p>
                     </div>
                 </div>
@@ -298,7 +302,7 @@
                     <div id="layout-canvas-container" class="mt-6 p-4 bg-[#FAF8F5] rounded-lg min-h-[300px] md:min-h-[400px] flex items-center justify-center text-center">
                         <canvas id="layout-canvas" class="bg-white rounded-md shadow-inner"></canvas>
                     </div>
-                    <div id="layout-analysis-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center">
+                    <div id="layout-analysis-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center ai-response-content">
                         <p class="text-lg text-[#786A61]">Your personalized layout analysis will appear here.</p>
                     </div>
                 </div>
@@ -316,7 +320,7 @@
                         </select>
                         <button id="get-goal-tips" class="btn-primary font-bold py-3 px-6 rounded-lg w-full sm:w-auto flex-shrink-0">Get Tips</button>
                     </div>
-                    <div id="goal-tips-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center">
+                    <div id="goal-tips-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center ai-response-content">
                         <p class="text-lg text-[#786A61]">Your personalized Vastu tips will appear here.</p>
                     </div>
                 </div>
@@ -340,7 +344,7 @@
                         </select>
                         <button id="get-color-palette" class="btn-primary font-bold py-3 px-6 rounded-lg w-full sm:w-auto flex-shrink-0">Get Palette</button>
                     </div>
-                    <div id="color-palette-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center">
+                    <div id="color-palette-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center ai-response-content">
                         <p class="text-lg text-[#786A61]">Your AI-generated color palette will appear here.</p>
                     </div>
                     <div class="text-center mt-4">
@@ -373,7 +377,7 @@
                         <input type="text" id="debate-topic-input" placeholder="e.g., Geomagnetism in Vastu" class="w-full p-3 rounded-lg border border-[#D7C6B7] bg-white focus:ring-2 focus:ring-[#BF5A36] focus:outline-none text-base">
                         <button id="ask-gemini-debate" class="btn-primary font-bold py-3 px-6 rounded-lg w-full sm:w-auto flex-shrink-0">Ask AI</button>
                     </div>
-                    <div id="debate-ai-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center">
+                    <div id="debate-ai-result" class="mt-6 p-6 bg-[#FAF8F5] rounded-lg min-h-[150px] flex items-center justify-center text-center ai-response-content">
                         <p class="text-lg text-[#786A61]">Your AI-generated explanation will appear here.</p>
                     </div>
                 </div>
@@ -672,7 +676,7 @@
                 });
             });
 
-            async function callGemini(prompt, resultElement, buttonElement) {
+            async function callGemini(prompt, resultElement, buttonElement, isJson = false) {
                 resultElement.innerHTML = '<div class="loader"></div>';
                 if(buttonElement) buttonElement.disabled = true;
 
@@ -681,7 +685,7 @@
                     const response = await fetch('/gemini-proxy', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ prompt: prompt })
+                        body: JSON.stringify({ prompt: prompt, isJson: isJson })
                     });
 
                     if (!response.ok) {
@@ -697,7 +701,18 @@
                         result.candidates[0].content.parts.length > 0) {
                         let text = result.candidates[0].content.parts[0].text;
                         console.log('Received successful response from AI');
-                        resultElement.innerHTML = `<p class="text-left whitespace-pre-wrap p-2 text-lg">${text}</p>`;
+                        if (isJson) {
+                            try {
+                                if (text.startsWith("```json")) {
+                                    text = text.substring(7, text.length - 3).trim();
+                                }
+                                return JSON.parse(text);
+                            } catch (parseError) {
+                                console.error("JSON Parsing Error:", parseError, "Raw text:", text);
+                                resultElement.innerHTML = '<p class="text-red-500">AI returned an invalid format. Please try again.</p>';
+                                return null;
+                            }
+                        }
                         return text;
                     } else {
                         let errorMessage = 'Sorry, I could not get a response. Please try again.';
@@ -715,15 +730,14 @@
                 }
                 return null;
             }
-
+            
             function formatAIResponse(text) {
                 let formattedText = text
                     .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-[#8C5A41]">$1</strong>') // Bold
-                    .replace(/\*(.*?)\*/g, '<li>$1</li>'); // List items
+                    .replace(/\* (.*?)(?=\n\*|\n\n|$)/g, '<li>$1</li>'); // List items
 
-                // Wrap list items in a <ul> tag
                 if (formattedText.includes('<li>')) {
-                    formattedText = '<ul class="list-disc list-inside space-y-2">' + formattedText + '</ul>';
+                    formattedText = '<ul class="list-disc list-inside space-y-2 text-left">' + formattedText.replace(/<\/li><li>/g, '</li><li class="mt-1">') + '</ul>';
                 }
                 return formattedText;
             }
