@@ -9,6 +9,21 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Refined Earth Tones -->
+    <!-- Application Structure Plan: The SPA is designed with a thematic, non-linear structure to maximize user engagement and comprehension. The core logic is to transform dense text and tables into interactive visual experiences. The structure includes: 1) An introduction with a new AI-powered "Daily Vastu Tip". 2) An interactive diagram for the Five Elements. 3) An interactive Vastu Purusha Mandala grid. 4) A clickable house plan for practical directional guidance, now enhanced with a Gemini-powered room planner and a new AI Layout Analyzer. 5) A balanced two-column view for the Science vs. Pseudoscience debate, with a Gemini feature for deeper exploration. 6) A comparative chart and card layout for Modern Vastu concepts. This user-centric, exploratory design was chosen over a linear report structure to allow users to dive into topics of interest in any order, making learning more intuitive and less intimidating. -->
+    <!-- Visualization & Content Choices: 
+        - NEW Gemini Feature: Daily Vastu Tip -> Goal: Engage/Inform -> Viz/Method: Text block on homepage -> Justification: Provides fresh, dynamic content on each visit, making the app feel alive.
+        - Report Info: Five Elements -> Goal: Inform -> Viz/Method: Interactive HTML/CSS grid with hover effects -> Justification: Turns a list into an engaging, discoverable element. Added clickable source links for credibility.
+        - Report Info: Vastu Purusha Mandala -> Goal: Organize -> Viz/Method: Interactive HTML/CSS grid representing the Mandala -> Justification: Visually explains a complex spatial and metaphysical concept. Added clickable source links.
+        - Report Info: Directional Alignments (Table 1) -> Goal: Inform/Organize -> Viz/Method: Interactive House Plan (HTML/CSS) with clickable zones -> Justification: Transforms a data-heavy table into a practical, easy-to-use tool. Added clickable source links for each direction.
+        - NEW Gemini Feature: Vastu for Goals -> Goal: Advise/Personalize -> Viz/Method: Dropdown + Button -> Justification: Provides actionable, goal-oriented advice, a common user need for Vastu.
+        - NEW Gemini Feature: AI Color Palette Generator -> Goal: Visualize/Advise -> Viz/Method: Dropdowns + Button + Color Swatches -> Justification: Offers practical, aesthetic, and personalized Vastu advice in a visually engaging format with a static, reliable source.
+        - NEW Gemini Feature: AI Vastu Layout Drawer -> Goal: Visualize/Personalize -> Viz/Method: Textarea + Canvas -> Justification: Allows users to see a visual representation of their described layout, making Vastu principles more tangible.
+        - Report Info: Vastu vs. Feng Shui (Table 2) -> Goal: Compare -> Viz/Method: Chart.js Radar Chart with explanation -> Justification: Provides a quick, powerful visual comparison of the two systems across multiple attributes.
+        - NEW Live Compass Feature: Goal: Orient -> Viz/Method: Floating CSS/JS compass with SVG arrow and smoothing algorithm -> Justification: Provides a practical, stable real-time tool for users to orient themselves and apply Vastu principles in their own space.
+        - Library/Method: Vanilla JS for all interactions. Chart.js for the radar chart. Tailwind CSS for styling. Gemini API for all AI features.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         html {
             scroll-behavior: smooth;
@@ -662,6 +677,7 @@
                 if(buttonElement) buttonElement.disabled = true;
 
                 try {
+                    console.log('Sending request to /gemini-proxy');
                     const response = await fetch('/gemini-proxy', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -669,6 +685,8 @@
                     });
 
                     if (!response.ok) {
+                        const errorBody = await response.text();
+                        console.error('Proxy server error response:', errorBody);
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
 
@@ -678,12 +696,14 @@
                         result.candidates[0].content && result.candidates[0].content.parts &&
                         result.candidates[0].content.parts.length > 0) {
                         let text = result.candidates[0].content.parts[0].text;
+                        console.log('Received successful response from AI');
                         resultElement.innerHTML = `<p class="text-left whitespace-pre-wrap p-2 text-lg">${text}</p>`;
                         return text;
                     } else {
                         let errorMessage = 'Sorry, I could not get a response. Please try again.';
                         if (result.error) {
                             errorMessage = `Error from AI: ${result.error.message}`;
+                            console.error('AI Error:', result.error);
                         }
                         resultElement.innerHTML = `<p class="text-red-500">${errorMessage}</p>`;
                     }
@@ -692,6 +712,46 @@
                     resultElement.innerHTML = '<p class="text-red-500">An error occurred. Please check the server logs and try again.</p>';
                 } finally {
                     if(buttonElement) buttonElement.disabled = false;
+                }
+                return null;
+            }
+
+            async function callGeminiForJson(prompt, resultElement, buttonElement) {
+                 resultElement.innerHTML = '<div class="loader"></div>';
+                if(buttonElement) buttonElement.disabled = true;
+
+                try {
+                    console.log('Sending JSON request to /gemini-proxy');
+                    const response = await fetch('/gemini-proxy', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt: prompt, isJson: true })
+                    });
+                     if (!response.ok) {
+                        const errorBody = await response.text();
+                        console.error('Proxy server error response:', errorBody);
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        let text = result.candidates[0].content.parts[0].text;
+                        console.log('Received successful JSON response from AI');
+                        return JSON.parse(text);
+                    } else {
+                       let errorMessage = 'Sorry, I could not get a response. Please try again.';
+                        if (result.error) {
+                            errorMessage = `Error from AI: ${result.error.message}`;
+                            console.error('AI Error:', result.error);
+                        }
+                        resultElement.innerHTML = `<p class="text-red-500">${errorMessage}</p>`;
+                    }
+                } catch(error) {
+                    console.error("Error calling Gemini proxy for JSON:", error);
+                    resultElement.innerHTML = '<p class="text-red-500">An error occurred. Please check the server logs and try again.</p>';
+                } finally {
+                     if(buttonElement) buttonElement.disabled = false;
                 }
                 return null;
             }
