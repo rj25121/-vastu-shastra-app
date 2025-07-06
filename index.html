@@ -657,53 +657,39 @@
                 });
             });
 
-            async function callGemini(prompt, resultElement, buttonElement, isJson = false) {
-                const apiKey = "";
-
+            async function callGemini(prompt, resultElement, buttonElement) {
                 resultElement.innerHTML = '<div class="loader"></div>';
                 if(buttonElement) buttonElement.disabled = true;
 
-                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-
-                if (isJson) {
-                    payload.generationConfig = {
-                        responseMimeType: "application/json",
-                    };
-                }
-                
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
                 try {
-                    const response = await fetch(apiUrl, {
+                    const response = await fetch('/gemini-proxy', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify({ prompt: prompt })
                     });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
                     const result = await response.json();
                     
                     if (result.candidates && result.candidates.length > 0 &&
                         result.candidates[0].content && result.candidates[0].content.parts &&
                         result.candidates[0].content.parts.length > 0) {
                         let text = result.candidates[0].content.parts[0].text;
-                        if (isJson) {
-                            try {
-                                return JSON.parse(text);
-                            } catch (parseError) {
-                                console.error("JSON Parsing Error:", parseError, "Raw text:", text);
-                                resultElement.innerHTML = '<p class="text-red-500">AI returned an invalid format. Please try again.</p>';
-                                return null;
-                            }
-                        } else {
-                            resultElement.innerHTML = `<p class="text-left whitespace-pre-wrap p-2 text-lg">${text}</p>`;
-                        }
+                        resultElement.innerHTML = `<p class="text-left whitespace-pre-wrap p-2 text-lg">${text}</p>`;
                         return text;
                     } else {
-                        resultElement.innerHTML = '<p class="text-red-500">Sorry, I could not get a response. Please try again.</p>';
+                        let errorMessage = 'Sorry, I could not get a response. Please try again.';
+                        if (result.error) {
+                            errorMessage = `Error from AI: ${result.error.message}`;
+                        }
+                        resultElement.innerHTML = `<p class="text-red-500">${errorMessage}</p>`;
                     }
                 } catch (error) {
-                    console.error("Error calling Gemini API:", error);
-                    resultElement.innerHTML = '<p class="text-red-500">An error occurred. Please check the console and try again.</p>';
+                    console.error("Error calling Gemini proxy:", error);
+                    resultElement.innerHTML = '<p class="text-red-500">An error occurred. Please check the server logs and try again.</p>';
                 } finally {
                     if(buttonElement) buttonElement.disabled = false;
                 }
