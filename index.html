@@ -4,26 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Science of Dwelling: An Interactive Guide to Vaastu Shastra with AI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Refined Earth Tones -->
-    <!-- Application Structure Plan: The SPA is designed with a thematic, non-linear structure to maximize user engagement and comprehension. The core logic is to transform dense text and tables into interactive visual experiences. The structure includes: 1) An introduction with a new AI-powered "Daily Vastu Tip". 2) An interactive diagram for the Five Elements. 3) An interactive Vastu Purusha Mandala grid. 4) A clickable house plan for practical directional guidance, now enhanced with a Gemini-powered room planner and a new AI Layout Analyzer. 5) A balanced two-column view for the Science vs. Pseudoscience debate, with a Gemini feature for deeper exploration. 6) A comparative chart and card layout for Modern Vastu concepts. This user-centric, exploratory design was chosen over a linear report structure to allow users to dive into topics of interest in any order, making learning more intuitive and less intimidating. -->
-    <!-- Visualization & Content Choices: 
-        - NEW Gemini Feature: Daily Vastu Tip -> Goal: Engage/Inform -> Viz/Method: Text block on homepage -> Justification: Provides fresh, dynamic content on each visit, making the app feel alive.
-        - Report Info: Five Elements -> Goal: Inform -> Viz/Method: Interactive HTML/CSS grid with hover effects -> Justification: Turns a list into an engaging, discoverable element. Added clickable source links for credibility.
-        - Report Info: Vastu Purusha Mandala -> Goal: Organize -> Viz/Method: Interactive HTML/CSS grid representing the Mandala -> Justification: Visually explains a complex spatial and metaphysical concept. Added clickable source links.
-        - Report Info: Directional Alignments (Table 1) -> Goal: Inform/Organize -> Viz/Method: Interactive House Plan (HTML/CSS) with clickable zones -> Justification: Transforms a data-heavy table into a practical, easy-to-use tool. Added clickable source links for each direction.
-        - NEW Gemini Feature: Vastu for Goals -> Goal: Advise/Personalize -> Viz/Method: Dropdown + Button -> Justification: Provides actionable, goal-oriented advice, a common user need for Vastu.
-        - NEW Gemini Feature: AI Color Palette Generator -> Goal: Visualize/Advise -> Viz/Method: Dropdowns + Button + Color Swatches -> Justification: Offers practical, aesthetic, and personalized Vastu advice in a visually engaging format with a static, reliable source.
-        - NEW Gemini Feature: AI Vastu Layout Drawer -> Goal: Visualize/Personalize -> Viz/Method: Textarea + Canvas -> Justification: Allows users to see a visual representation of their described layout, making Vastu principles more tangible.
-        - Report Info: Vastu vs. Feng Shui (Table 2) -> Goal: Compare -> Viz/Method: Chart.js Radar Chart with explanation -> Justification: Provides a quick, powerful visual comparison of the two systems across multiple attributes.
-        - NEW Live Compass Feature: Goal: Orient -> Viz/Method: Floating CSS/JS compass with SVG arrow and smoothing algorithm -> Justification: Provides a practical, stable real-time tool for users to orient themselves and apply Vastu principles in their own space.
-        - Library/Method: Vanilla JS for all interactions. Chart.js for the radar chart. Tailwind CSS for styling. Gemini API for all AI features.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script>
+    <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+    <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap)" rel="stylesheet">
     <style>
         html {
             scroll-behavior: smooth;
@@ -348,7 +333,7 @@
                         <p class="text-lg text-[#786A61]">Your AI-generated color palette will appear here.</p>
                     </div>
                     <div class="text-center mt-4">
-                        <a href="https://www.architecturaldigest.in/content/vastu-shastra-colour-therapy-home-increase-well-being/" target="_blank" rel="noopener noreferrer" class="source-link">Learn more about Vastu colors</a>
+                        <a href="[https://www.architecturaldigest.in/content/vastu-shastra-colour-therapy-home-increase-well-being/](https://www.architecturaldigest.in/content/vastu-shastra-colour-therapy-home-increase-well-being/)" target="_blank" rel="noopener noreferrer" class="source-link">Learn more about Vastu colors</a>
                     </div>
                 </div>
             </div>
@@ -450,34 +435,34 @@
 
     <script>
         const elementsData = [
-            { name: "Earth (Prithvi)", icon: "🌍", description: "Represents stability, support, and grounding. Dominant in the Southwest.", reference: "https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta" },
-            { name: "Water (Jal)", icon: "💧", description: "Symbolizes flow, purity, and life. Ideally placed in the Northeast.", reference: "https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta" },
-            { name: "Fire (Agni)", icon: "🔥", description: "Denotes energy, transformation, and power. Governed by the Southeast.", reference: "https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta" },
-            { name: "Air (Vayu)", icon: "💨", description: "Signifies movement, communication, and freshness. Dominant in the Northwest.", reference: "https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta" },
-            { name: "Space (Akasha)", icon: "✨", description: "Represents expansion, openness, and the cosmos. Associated with the central area (Brahmasthan).", reference: "https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta" }
+            { name: "Earth (Prithvi)", icon: "🌍", description: "Represents stability, support, and grounding. Dominant in the Southwest.", reference: "[https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta](https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta)" },
+            { name: "Water (Jal)", icon: "💧", description: "Symbolizes flow, purity, and life. Ideally placed in the Northeast.", reference: "[https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta](https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta)" },
+            { name: "Fire (Agni)", icon: "🔥", description: "Denotes energy, transformation, and power. Governed by the Southeast.", reference: "[https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta](https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta)" },
+            { name: "Air (Vayu)", icon: "💨", description: "Signifies movement, communication, and freshness. Dominant in the Northwest.", reference: "[https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta](https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta)" },
+            { name: "Space (Akasha)", icon: "✨", description: "Represents expansion, openness, and the cosmos. Associated with the central area (Brahmasthan).", reference: "[https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta](https://isha.sadhguru.org/en/wisdom/article/five-elements-pancha-bhuta)" }
         ];
 
         const mandalaData = [
-            { zone: 'Brahmasthan', deity: 'Brahma', description: 'The energetic core. Represents Space. Keep open and light.', reference: "https://www.researchgate.net/figure/The-Vaastu-Purusha-Mandala-is-the-clearest-model-of-the-Universe-and-provides-the-basis_fig1_317901400" },
-            { zone: 'Ishanya (NE)', deity: 'Shiva / Eeshaan', description: 'Head of the Purusha. Most sacred zone for prayer and meditation. Represents Water.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" },
-            { zone: 'Agneya (SE)', deity: 'Agni', description: 'Right hand. Zone of Fire. Ideal for kitchens and electricals.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" },
-            { zone: 'Nairutya (SW)', deity: 'Niruti', description: 'Feet of the Purusha. Zone of Earth. Represents stability. Ideal for master bedroom.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" },
-            { zone: 'Vayavya (NW)', deity: 'Vayu', description: 'Left hand. Zone of Air. Represents movement. Good for guest rooms.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" },
-            { zone: 'Uttara (N)', deity: 'Kuber', description: 'Governs wealth and prosperity. Good for entrances and offices.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" },
-            { zone: 'Purva (E)', deity: 'Indra', description: 'Governs health and new beginnings. Ideal for entrances and living areas.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" },
-            { zone: 'Dakshina (S)', deity: 'Yama', description: 'Governs strength and dharma. Good for bedrooms and heavy structures.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" },
-            { zone: 'Paschima (W)', deity: 'Varuna', description: 'Governs gains and fulfillment. Suitable for dining areas and pantries.', reference: "https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf" }
+            { zone: 'Brahmasthan', deity: 'Brahma', description: 'The energetic core. Represents Space. Keep open and light.', reference: "[https://www.researchgate.net/figure/The-Vaastu-Purusha-Mandala-is-the-clearest-model-of-the-Universe-and-provides-the-basis_fig1_317901400](https://www.researchgate.net/figure/The-Vaastu-Purusha-Mandala-is-the-clearest-model-of-the-Universe-and-provides-the-basis_fig1_317901400)" },
+            { zone: 'Ishanya (NE)', deity: 'Shiva / Eeshaan', description: 'Head of the Purusha. Most sacred zone for prayer and meditation. Represents Water.', reference: "[https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf](https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf)" },
+            { zone: 'Agneya (SE)', deity: 'Agni', description: 'Right hand. Zone of Fire. Ideal for kitchens and electricals.', reference: "[https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf](https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf)" },
+            { zone: 'Nairutya (SW)', deity: 'Niruti', description: 'Feet of the Purusha. Zone of Earth. Represents stability. Ideal for master bedroom.', reference: "[https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf](https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf)" },
+            { zone: 'Vayavya (NW)', deity: 'Vayu', description: 'Left hand. Zone of Air. Represents movement. Good for guest rooms.', reference: "[https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf](https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf)" },
+            { zone: 'Uttara (N)', deity: 'Kuber', description: 'Governs wealth and prosperity. Good for entrances and offices.', reference: "[https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf](https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf)" },
+            { zone: 'Purva (E)', deity: 'Indra', description: 'Governs health and new beginnings. Ideal for entrances and living areas.', reference: "[https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf](https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf)" },
+            { zone: 'Dakshina (S)', deity: 'Yama', description: 'Governs strength and dharma. Good for bedrooms and heavy structures.', reference: "[https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf](https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf)" },
+            { zone: 'Paschima (W)', deity: 'Varuna', description: 'Governs gains and fulfillment. Suitable for dining areas and pantries.', reference: "[https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf](https://www.irjet.net/archives/V7/i2/IRJET-V7I220.pdf)" }
         ];
         
         const directionsData = {
-            NE: { title: "Northeast (Ishanya)", attributes: "Deity: Shiva | Element: Water", details: "<h4>Auspicious For:</h4><p>Pooja Room, Meditation, Water Bodies.</p><h4>Inauspicious For:</h4><p>Toilets, Kitchen, Heavy Storage.</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" },
-            E: { title: "East (Purva)", attributes: "Deity: Indra | Element: Air/Fire", details: "<h4>Auspicious For:</h4><p>Main Entrance, Living Room, Study.</p><h4>Inauspicious For:</h4><p>Heavy Structures, Toilets (waste).</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" },
-            SE: { title: "Southeast (Agneya)", attributes: "Deity: Agni | Element: Fire", details: "<h4>Auspicious For:</h4><p>Kitchen, Electrical Panels, Generators.</p><h4>Inauspicious For:</h4><p>Bedrooms, Water Bodies.</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" },
-            S: { title: "South (Dakshina)", attributes: "Deity: Yama | Element: Fire", details: "<h4>Auspicious For:</h4><p>Master Bedroom, Staircase, Heavy Storage.</p><h4>Inauspicious For:</h4><p>Main Entrance, Kitchen.</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" },
-            SW: { title: "Southwest (Nairutya)", attributes: "Deity: Niruti | Element: Earth", details: "<h4>Auspicious For:</h4><p>Master Bedroom, Heavy Furniture.</p><h4>Inauspicious For:</h4><p>Entrance, Kitchen, Toilets.</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" },
-            W: { title: "West (Paschima)", attributes: "Deity: Varuna | Element: Water/Space", details: "<h4>Auspicious For:</h4><p>Dining Room, Toilets, Study Room.</p><h4>Inauspicious For:</h4><p>Main Entrance (in some traditions).</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" },
-            NW: { title: "Northwest (Vayavya)", attributes: "Deity: Vayu | Element: Air", details: "<h4>Auspicious For:</h4><p>Guest Room, Garage, Bathrooms.</p><h4>Inauspicious For:</h4><p>Kitchen (primary), Master Bedroom.</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" },
-            N: { title: "North (Uttara)", attributes: "Deity: Kuber | Element: Water/Earth", details: "<h4>Auspicious For:</h4><p>Main Entrance, Office, Keeping Valuables.</p><h4>Inauspicious For:</h4><p>Toilets, Heavy Storage.</p>", reference: "https://www.ijnrd.org/papers/IJNRD2204105.pdf" }
+            NE: { title: "Northeast (Ishanya)", attributes: "Deity: Shiva | Element: Water", details: "<h4>Auspicious For:</h4><p>Pooja Room, Meditation, Water Bodies.</p><h4>Inauspicious For:</h4><p>Toilets, Kitchen, Heavy Storage.</p>", reference: "[https://www.ijnrd.org/papers/IJNRD2204105.pdf](https://www.ijnrd.org/papers/IJNRD2204105.pdf)" },
+            E: { title: "East (Purva)", attributes: "Deity: Indra | Element: Air/Fire", details: "<h4>Auspicious For:</h4><p>Main Entrance, Living Room, Study.</p><h4>Inauspicious For:</h4><p>Heavy Structures, Toilets (waste).</p>", reference: "[https://www.ijnrd.org/papers/IJNRD2204105.pdf](https://www.ijnrd.org/papers/IJNRD2204105.pdf)" },
+            SE: { title: "Southeast (Agneya)", attributes: "Deity: Agni | Element: Fire", details: "<h4>Auspicious For:</h4><p>Kitchen, Electrical Panels, Generators.</p><h4>Inauspicious For:</h4><p>Bedrooms, Water Bodies.</p>", reference: "[https://www.ijnrd.org/papers/IJNRD2204105.pdf](https://www.ijnrd.org/papers/IJNRD2204105.pdf)" },
+            S: { title: "South (Dakshina)", attributes: "Deity: Yama | Element: Fire", details: "<h4>Auspicious For:</h4><p>Master Bedroom, Staircase, Heavy Storage.</p><h4>Inauspicious For:</h4><p>Main Entrance, Kitchen.</p>", reference: "[https://www.ijnrd.org/papers/IJNRD2204105.pdf](https://www.ijnrd.org/papers/IJNRD2204105.pdf)" },
+            SW: { title: "Southwest (Nairutya)", attributes: "Deity: Niruti | Element: Earth", details: "<h4>Auspicious For:</h4><p>Master Bedroom, Heavy Furniture.</p><h4>Inauspicious For:</h4><p>Entrance, Kitchen, Toilets.</p>", reference: "[https://www.ijnrd.org/papers/IJNRD2204105.pdf](https://www.ijnrd.org/papers/IJNRD2204105.pdf)" },
+            W: { title: "West (Paschima)", attributes: "Deity: Varuna | Element: Water/Space", details: "<h4>Auspicious For:</h4><p>Dining Room, Toilets, Study Room.</p><h4>Inauspicious For:</h4><p>Main Entrance (in some traditions).</p>", reference: "[https://www.ijnrd.org/papers/IJNRD2204105.pdf](https://www.ijnrd.org/papers/IJNRD2204105.pdf)" },
+            NW: { title: "Northwest (Vayavya)", attributes: "Deity: Vayu | Element: Air", details: "<h4>Auspicious For:</h4><p>Guest Room, Garage, Bathrooms.</p><h4>Inauspicious For:</h4><p>Kitchen (primary), Master Bedroom.</p>", reference: "[https://www.ijnrd.org/papers/IJNRD2204105.pdf](https://www.ijnrd.org/papers/IJNRD2204105.pdf)" },
+            N: { title: "North (Uttara)", attributes: "Deity: Kuber | Element: Water/Earth", details: "<h4>Auspicious For:</h4><p>Main Entrance, Office, Keeping Valuables.</p><h4>Inauspicious For:</h4><p>Toilets, Heavy Storage.</p>", reference: "[https://www.ijnrd.org/papers/IJNRD2204105.pdf](https://www.ijnrd.org/papers/IJNRD2204105.pdf)" }
         };
 
         const debateData = {
