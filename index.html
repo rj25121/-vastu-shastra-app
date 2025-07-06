@@ -715,10 +715,29 @@
                 }
                 return null;
             }
+
+            function formatAIResponse(text) {
+                let formattedText = text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-[#8C5A41]">$1</strong>') // Bold
+                    .replace(/\*(.*?)\*/g, '<li>$1</li>'); // List items
+
+                // Wrap list items in a <ul> tag
+                if (formattedText.includes('<li>')) {
+                    formattedText = '<ul class="list-disc list-inside space-y-2">' + formattedText + '</ul>';
+                }
+                return formattedText;
+            }
+
+            async function callAndFormatGemini(prompt, resultElement, buttonElement) {
+                 const rawText = await callGemini(prompt, resultElement, buttonElement);
+                 if (rawText) {
+                     resultElement.innerHTML = formatAIResponse(rawText);
+                 }
+            }
             
             // Daily Tip
             const dailyTipContent = document.getElementById('daily-tip-content');
-            callGemini("Give me a short, practical, and inspiring Vastu Shastra tip for today.", dailyTipContent, null);
+            callAndFormatGemini("Give me a short, practical, and inspiring Vastu Shastra tip for today.", dailyTipContent, null);
 
             // Room Planner
             const getVastuSuggestionsBtn = document.getElementById('get-vastu-suggestions');
@@ -728,7 +747,7 @@
                 const roomType = roomTypeSelect.value;
                 const directionInfo = directionsData[currentDirection];
                 const prompt = `As a Vastu Shastra expert, provide practical, modern suggestions for a ${roomType} located in the ${directionInfo.title} direction of a home. Consider furniture placement, ideal colors, materials, and any specific remedies or enhancements suitable for this combination. Present the information clearly in bullet points.`;
-                callGemini(prompt, vastuSuggestionsResult, getVastuSuggestionsBtn);
+                callAndFormatGemini(prompt, vastuSuggestionsResult, getVastuSuggestionsBtn);
             });
 
             // Layout Drawer & Analyzer
@@ -766,7 +785,7 @@
                     return;
                 }
                 const prompt = `You are a Vastu Shastra expert. A user has described their room layout. Analyze it based on Vastu principles. Identify positive aspects and areas for improvement. Provide specific, actionable remedies in a clear, easy-to-understand format. Here is the user's description: "${description}"`;
-                callGemini(prompt, layoutAnalysisResult, analyzeLayoutBtn);
+                callAndFormatGemini(prompt, layoutAnalysisResult, analyzeLayoutBtn);
             });
 
             function drawLayoutFromCode(code) {
@@ -795,7 +814,7 @@
             addSafeEventListener(getGoalTipsBtn, () => {
                 const goal = goalSelect.value;
                 const prompt = `As a Vastu Shastra expert, provide 5 actionable Vastu tips and remedies specifically for achieving the goal of '${goal}'. Explain the reasoning behind each tip clearly and concisely.`;
-                callGemini(prompt, goalTipsResult, getGoalTipsBtn);
+                callAndFormatGemini(prompt, goalTipsResult, getGoalTipsBtn);
             });
 
             // Color Palette Generator
@@ -841,7 +860,7 @@
                     return;
                 }
                 const prompt = `Please provide a balanced and nuanced explanation of "${topic}" within the context of the Vastu Shastra debate. Cover both the traditional Vastu perspective and the modern scientific or skeptical viewpoint. Explain the core arguments from each side clearly.`;
-                callGemini(prompt, debateAiResult, askDebateBtn);
+                callAndFormatGemini(prompt, debateAiResult, askDebateBtn);
             });
 
             // Live Compass Feature
